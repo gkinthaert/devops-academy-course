@@ -1,14 +1,14 @@
 name: CI
 
-# on: [push]
+on: [push]
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+#on:
+#  push:
+ #   branches:
+ #     - main
+ # pull_request:
+ #   branches:
+ #     - main
 
 
 jobs:
@@ -40,4 +40,23 @@ jobs:
 
       - name: Run linter
         run: flake8 .
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 01-ci-lab
+
+    permissions:
+      id-token: write
+
+    needs: test
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
+          aws-region: us-east-2
 
