@@ -60,3 +60,21 @@ jobs:
           role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
           aws-region: us-east-2
 
+      - name: Prepare Lambda package
+        run: |
+          cp app/calculator.py lambda_function.py
+          zip function.zip lambda_function.py    
+
+      - name: Create Lambda
+        run: |
+          aws lambda create-function \
+            -- function-name calculator-app \
+            -- role arn:aws:iam::238475938798:role/calculator-app-role \
+            -- runtime python 3.13 \
+            -- zip-file fileb://function.zip
+
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+            -- function-name calculator-app \
+            -- zip-file fileb://function.zip
