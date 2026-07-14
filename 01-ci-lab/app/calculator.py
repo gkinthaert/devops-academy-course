@@ -14,7 +14,7 @@ def multiply(a, b):
 
 
 def subtract(a, b):
-    return a - b        
+    return a - b
 
 
 def power(a, b):
@@ -43,7 +43,7 @@ def lambda_handler(event, context):
     elif operation == 'multiply':
         result = multiply(a, b)
     elif operation == "substract":
-        result = substract(a, b)
+        result = subtract(a, b)
     elif operation == "power":
         result = power(a, b)
     else:
