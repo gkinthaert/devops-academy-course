@@ -1,14 +1,14 @@
 name: CI
 
-# on: [push]
+on: [push]
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+#on:
+#  push:
+ #   branches:
+ #     - main
+ # pull_request:
+ #   branches:
+ #     - main
 
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -41,3 +41,61 @@ jobs:
       - name: Run linter
         run: flake8 .
 
+  deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 01-ci-lab
+
+    permissions:
+      id-token: write
+
+    needs: test
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
+          aws-region: us-east-2
+
+      - name: Debug - list repo contents
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type d
+
+      - name: Prepare Lambda package
+        run: |
+          cp app/calculator.py lambda_function.py
+          zip function.zip lambda_function.py    
+
+      - name: Create /Update Lambda
+        run: |
+          if aws lambda get-function --function-name calculator-app >/dev/null 2>$1; then
+
+            echo "calulator-app lambda exists!"
+
+            aws lambda update-function-code \
+              --function-name calculator-app \
+              --zip-file fileb://function.zip
+
+          else
+
+            echo "calculator-app lambda does not existm, creating it!"
+
+            aws lambda create-function \
+              --function-name calculator-app \
+              --role arn:aws:iam::238475938798:role/calculator-app-role \
+              --runtime python3.13 \
+              --handler lambda_function.lambda_handler \
+              --zip-file fileb://function.zip
+            
+            fi
+
+    
