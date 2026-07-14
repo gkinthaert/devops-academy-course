@@ -22,10 +22,10 @@ def power(a, b):
 
 
 def lambda_handler(event, context):
-    # function URL / API Gateway  
+    # function URL / API Gateway
     if "body" in event:
         if isinstance(event["body"], str):
-            body = json.loads(event["body"])   
+            body = json.loads(event["body"])
         else:
             body = event["body"]
     # test from AWS console
