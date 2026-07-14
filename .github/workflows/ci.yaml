@@ -80,7 +80,7 @@ jobs:
           aws lambda create-function \
             --function-name calculator-app \
             --role arn:aws:iam::238475938798:role/calculator-app-role \
-            --runtime python 3.13 \
+            --runtime python3.13 \
             --handler lambda_function.lambda_handler \
             --zip-file fileb://function.zip
 
