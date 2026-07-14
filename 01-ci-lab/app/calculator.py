@@ -48,11 +48,11 @@ def lambda_handler(event, context):
         result = power(a, b)
     else:
         return {
-           statusCode": 400,
+            "statusCode": 400,
             "body": json.dumps({"error": "Unsupported operation"})
         }
 
     return {
-         "statusCode": 200,
+        "statusCode": 200,
         "body": json.dumps({"result": result})
     }
