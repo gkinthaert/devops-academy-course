@@ -54,6 +54,10 @@ jobs:
     needs: test
 
     steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
@@ -74,14 +78,14 @@ jobs:
       - name: Create Lambda
         run: |
           aws lambda create-function \
-            -- function-name calculator-app \
-            -- role arn:aws:iam::238475938798:role/calculator-app-role \
-            -- runtime python 3.13 \
-            -- handler lambda_function.lambda_handler \
-            -- zip-file fileb://function.zip
+            --function-name calculator-app \
+            --role arn:aws:iam::238475938798:role/calculator-app-role \
+            --runtime python 3.13 \
+            --handler lambda_function.lambda_handler \
+            --zip-file fileb://function.zip
 
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code \
-            -- function-name calculator-app \
-            -- zip-file fileb://function.zip
+            --function-name calculator-app \
+            --zip-file fileb://function.zip
