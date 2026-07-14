@@ -6,6 +6,10 @@ def divide(a, b):
     return a / b
 
 
+def multiply(a, b):
+    return a * b
+
+
 def lambda_handler(event, context):
     operation = event.get('operation')
     a = event.get('a')
@@ -15,6 +19,8 @@ def lambda_handler(event, context):
         result = add(a, b)
     elif operation == 'divide':
         result = divide(a, b)
+    elif operation == 'multiply':
+        result = multiply(a, b)
     else:
         return {
             'statusCode': 400,
