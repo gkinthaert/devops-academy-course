@@ -60,6 +60,12 @@ jobs:
           role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
           aws-region: us-east-2
 
+      - name: Debug - list repo contents
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type d
+
       - name: Prepare Lambda package
         run: |
           cp app/calculator.py lambda_function.py
