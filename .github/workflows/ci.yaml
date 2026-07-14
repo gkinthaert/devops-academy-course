@@ -129,4 +129,38 @@ jobs:
               --function-name ${{ env.LAMBDA_NAME }}
 
           fi
+      
+      - name: Create function URL
+        run: |
+          if ! aws lambda get-function-url-config \
+            --function-name ${{ env.LAMBDA_NAME }} >/dev/null 2>&1; then
+
+            echo "URL does not exist, creating"
+
+            aws lambda create-function-url-config \
+              --function-name ${{ env.LAMBDA_NAME}} \
+              --auth-type NONE
+            
+            aws lambda add-permission \
+              --function-name ${{ env.LAMBDA_NAME }} \
+              --statement-id FunctionAllowPublicAccessUrl \
+              --action lambda:InvokeFunctionUrl \
+              --principal "*" \
+              --function-url-auth-type NONE
+
+            aws lambda add-permission \
+              --function-name ${{ env.LAMBDA_NAME }} \
+              --statement-id FunctionAllowPublicAccess \
+              --action lambda:InvokeFunction \
+              --principal "*" \
+              --invoked-via-function-url
+
+          else
+
+            echo "URL exists"
+
+            aws lambda get-function-url-config \
+              --function-name ${{ env.LAMBDA_NAME }}
+
+          fi
     
