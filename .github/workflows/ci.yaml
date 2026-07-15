@@ -56,6 +56,7 @@ jobs:
 
     env:
       LAMBDA_NAME: calculator-app
+      REGION: us-east-2
 
     steps:
 
@@ -66,7 +67,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
-          aws-region: us-east-2
+          aws-region: ${{ REGION }}
 
       - name: Prepare Lambda package
         run: |
