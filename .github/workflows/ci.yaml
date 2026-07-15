@@ -67,7 +67,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::238475938798:role/github-actions-lambda-deploy-role
-          aws-region: ${{ REGION }}
+          aws-region: ${{ env.REGION }}
 
       - name: Prepare Lambda package
         run: |
@@ -76,7 +76,7 @@ jobs:
 
       - name: Create /Update Lambda
         run: |
-          if aws lambda get-function --function-name ${{ env.LAMBDA_NAME }} >/dev/null 2>$1; then
+          if aws lambda get-function --function-name ${{ env.LAMBDA_NAME }} >/dev/null 2>&1; then
 
             echo "${{ env.LAMBDA_NAME }} lambda exists!"
 
@@ -130,38 +130,3 @@ jobs:
               --function-name ${{ env.LAMBDA_NAME }}
 
           fi
-      
-      - name: Create function URL
-        run: |
-          if ! aws lambda get-function-url-config \
-            --function-name ${{ env.LAMBDA_NAME }} >/dev/null 2>&1; then
-
-            echo "URL does not exist, creating"
-
-            aws lambda create-function-url-config \
-              --function-name ${{ env.LAMBDA_NAME}} \
-              --auth-type NONE
-            
-            aws lambda add-permission \
-              --function-name ${{ env.LAMBDA_NAME }} \
-              --statement-id FunctionAllowPublicAccessUrl \
-              --action lambda:InvokeFunctionUrl \
-              --principal "*" \
-              --function-url-auth-type NONE
-
-            aws lambda add-permission \
-              --function-name ${{ env.LAMBDA_NAME }} \
-              --statement-id FunctionAllowPublicAccess \
-              --action lambda:InvokeFunction \
-              --principal "*" \
-              --invoked-via-function-url
-
-          else
-
-            echo "URL exists"
-
-            aws lambda get-function-url-config \
-              --function-name ${{ env.LAMBDA_NAME }}
-
-          fi
-    
